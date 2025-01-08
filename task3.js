@@ -3,17 +3,29 @@ import ollama from "ollama";
 let q;
 
 let ans;
-for(let i=1;i<=3;i++){
-q=`./Question/q${i}.txt`
-console.log(`${i}.txt`);
 
-fs.writeFileSync(`./Answers/a${i}.txt`,"response here")
-const response = await ollama.chat({
-  model: "qwen2:0.5b",
-  messages: [{ role: "user", content: q }],
-  
-});
-ans = response.message.content
-fs.writeFileSync("./Answers/${i}.txt",ans,"utf-8")
+async function To_llm(q,i) {
+
+  const response = await ollama.chat({
+    model: "qwen2:0.5b",
+    messages: [{ role: "user", content: q }],
+    
+  });
+  ans = response.message.content
+  fs.writeFileSync(`./Answers/a${i}.txt`,ans,(err)=>{
+    if(err){
+      throw err;
+    }
+  })
+}
+for(let i=1;i<=3;i++){
+q=`./Questions/q${i}.txt`
+  To_llm(fs.readFileSync(q,'utf-8',(err)=>{
+    if(err){
+      throw err;
+    }
+  }),i)
+
+
 }
 console.log(`answer all in output file`);
